@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Upload</title>
+</head>
+<body>
+    <h1>Загрузите Exel файлы для сравнения</h1>
+    <form action="/upload/" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        Первый файл:
+        <div>
+            <input type="file" name="file1" required accept=".xlsx, .xls">
+        </div>
+        <br>Второй файл:
+        <div>
+            <input type="file" name="file2" required accept=".xlsx, .xls">
+        </div>
+        <br><button type="submit">Upload</button>
+    </form>
+</body>
+</html>
