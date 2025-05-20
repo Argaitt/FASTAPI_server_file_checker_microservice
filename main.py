@@ -1,8 +1,8 @@
-import asyncio
+import logging.config
+import logging
 import os.path
 import re
 from contextlib import asynccontextmanager
-from email.policy import default
 from io import BytesIO
 
 from fastapi import FastAPI, Request, UploadFile, File, HTTPException, Form
@@ -10,6 +10,7 @@ from starlette.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from openpyxl.reader.excel import load_workbook
 
+from logging_config import LOGGING_CONFIG
 from utilits.csrf import generate_csrf_token, validate_csrf_token
 from utilits.data_comporator import compare
 from utilits.redis_controller import redis_init
@@ -27,9 +28,12 @@ async def lifespan(app: FastAPI):
     yield
 
     await app.state.redis.close()
-    print("Redis closed")
+    logger.info("Redis closed")
 
 app = FastAPI(lifespan=lifespan)
+
+logging.config.dictConfig(LOGGING_CONFIG)
+logger = logging.getLogger("app")
 
 @app.get("/")
 async def root():
@@ -78,7 +82,7 @@ async def upload_file(
                             data.append(row)
                             break
             except Exception as e:
-                print(f'exel parse file failure with error: {e}')
+                logger.error(f'exel parse file failure with error: {e}')
 
             wb.close()
 
