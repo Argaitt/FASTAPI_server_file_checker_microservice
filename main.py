@@ -15,6 +15,9 @@ from utilits.csrf import generate_csrf_token, validate_csrf_token
 from utilits.data_comporator import compare
 from utilits.redis_controller import redis_init
 
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.resources import Resource
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -23,7 +26,13 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    #Инициализация Redis
     app.state.redis = await redis_init()
+
+    #Инициализация Opentelemetry
+    resource = Resource.create(attributes={"service.name": "doc_comparator_service"})
+    trace_provider = TracerProvider(resource=resource)
+
 
     yield
 
